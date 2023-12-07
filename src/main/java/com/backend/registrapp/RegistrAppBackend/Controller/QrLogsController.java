@@ -48,6 +48,13 @@ public class QrLogsController {
             return ResponseEntity.badRequest().body("Profesor o alumno no encontrado");
         }
 
+        // Verifica si ya existe un registro para el mismo alumno y fecha
+        boolean qrLogExists = qrLogRepository.existsByAlumnoAndFecha(alumno, LocalDate.now());
+
+        if (qrLogExists) {
+            return ResponseEntity.badRequest().body("Ya existe un registro para el alumno en la fecha actual");
+        }
+
         // Crea una instancia de QrLog y guarda en la base de datos
         QrLogs qrLog = new QrLogs();
         qrLog.setProfesor(profesor);
