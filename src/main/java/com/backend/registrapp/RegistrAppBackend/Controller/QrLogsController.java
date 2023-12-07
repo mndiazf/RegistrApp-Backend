@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/qrlogs")
 public class QrLogsController {
 
