@@ -4,16 +4,21 @@ import com.backend.registrapp.RegistrAppBackend.Models.Alumno;
 import com.backend.registrapp.RegistrAppBackend.Models.Profesor;
 import com.backend.registrapp.RegistrAppBackend.Models.Requests.QrLogRequest;
 import com.backend.registrapp.RegistrAppBackend.Models.QrLogs;
+import com.backend.registrapp.RegistrAppBackend.Models.Requests.QrLogsResponse;
 import com.backend.registrapp.RegistrAppBackend.Repository.AlumnoRepository;
 import com.backend.registrapp.RegistrAppBackend.Repository.ProfesorRepository;
 import com.backend.registrapp.RegistrAppBackend.Repository.QrLogsRepository;
+import com.backend.registrapp.RegistrAppBackend.Services.QrLogsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -28,6 +33,9 @@ public class QrLogsController {
 
     @Autowired
     private AlumnoRepository alumnoRepository;
+
+    @Autowired
+    private QrLogsService qrLogsService;
 
     @PostMapping("/guardar")
     public ResponseEntity<String> guardarQrLog(@RequestBody QrLogRequest qrLogRequest) {
@@ -69,6 +77,21 @@ public class QrLogsController {
         qrLogRepository.delete(qrLog);
 
         return ResponseEntity.ok("QrLog borrado exitosamente");
+    }
+
+
+    @GetMapping("/by-profesor")
+    public ResponseEntity<List<QrLogsResponse>> getQrLogsByProfesorAndFecha(
+            @RequestParam Long idProfesor,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+
+        List<QrLogsResponse> responseList = qrLogsService.getQrLogsByProfesorAndFecha(idProfesor, fecha);
+
+        if (responseList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(responseList);
     }
 }
 
